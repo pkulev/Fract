@@ -1,7 +1,5 @@
 import sys
 import pygame
-from math import sin, cos
-from math import pi as PI
 from vm import *
 
 pygame.init()
