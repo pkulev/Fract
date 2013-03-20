@@ -1,6 +1,6 @@
 import sys
 import pygame
-from vm import *
+import vm
 
 pygame.init()
 width = 640
@@ -35,25 +35,7 @@ program = GenProgram(program, rules, deep)
 
     
     
-debug  = True
 
-if debug:
-    for command in program:
-        if command == "F":
-            GoForward(step)
-        elif command == "+":
-            TurnRight(d_alf)
-        elif command == "-":
-            TurnLeft(d_alf)
-        elif command == "[":
-            stack = Push(stack, (cur_x, cur_y, alf))
-        elif command == "]":
-            Pop(stack)
 
-while True:
-    for event in pygame.event.get(): 
-        if event.type == pygame.QUIT: 
-            sys.exit(0) 
-        else: pass
 
 

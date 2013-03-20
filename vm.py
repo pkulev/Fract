@@ -22,11 +22,28 @@ def Push(st, elem):
     st.append(elem)
     return st
 
-def Pop(st):
-    global cur_x
-    global cur_y
-    global alf
-    global stack
-    elem = st[len(st) - 1]
+def Pop(stack):
+    elem = stack.pop()
     cur_x, cur_y, alf = elem
-    stack = st[:-1]
+    return elem
+
+debug  = True
+
+if debug:
+    for command in program:
+        if command == "F":
+            GoForward(step)
+        elif command == "+":
+            TurnRight(d_alf)
+        elif command == "-":
+            TurnLeft(d_alf)
+        elif command == "[":
+            stack = Push(stack, (cur_x, cur_y, alf))
+        elif command == "]":
+            Pop(stack)
+
+while True:
+    for event in pygame.event.get(): 
+        if event.type == pygame.QUIT: 
+            sys.exit(0) 
+        else: pass
