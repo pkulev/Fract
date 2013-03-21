@@ -23,19 +23,12 @@ def GenProgram(current, rules, depth):
             else:
                 temp += command
         return GenProgram(temp, rules, depth - 1)
- 
+
 step = 3
 deep = 5
 alf = 0.0
 d_alf = 460
-stack = []
 element = [cur_x, cur_y, alf]
 
-program = GenProgram(program, rules, deep)
-
-    
-    
-
-
-
-
+vm.init((window, step, alf, d_alf, cur_x, cur_y))    
+vm.mainLoop(GenProgram(program, rules, deep))
