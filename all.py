@@ -1,27 +1,11 @@
 import sys
 import pygame
 
-
+#view
 pygame.init()
 width = 640
 height = 480
 window = pygame.display.set_mode((width, height))
-inp = "manual"
-if inp == "auto":
-    rules = dict(F = "FF+[+F-F-F]-[-F+F+F]")
-    program = "F"
-else:
-    rnumb = raw_input("[how much"])
- 
-step = 3
-deep = 5
-alf = 0.0
-d_alf = 460
-stack = []
-element = [cur_x, cur_y, alf]
-
-program = GenProgram(program, rules, deep)
-
 
 #virtual machine implementation
 
@@ -65,7 +49,7 @@ def Push(stack, element):
     """stack is tuple, element is tuple like (x, y, angle)
        returns stack with added element"""
     assert type(stack) == type(element) == tuple and len(element) == 3
-    stack = stack , element
+    stack = stack + (element,)
     return stack
 
 #clean but not tested
@@ -78,9 +62,9 @@ def Pop(stack):
     return stack, element
 
 #eh, clean
-def draw(program, cur_x, cur_y, alf, stack):
+def draw(program, cur_x, cur_y, alf, d_alf, step):
     debug  = True
-
+    stack = (cur_x, cur_y, alf)
     if debug:
         for command in program:
             if command == "F":
@@ -99,3 +83,26 @@ def draw(program, cur_x, cur_y, alf, stack):
             if event.type == pygame.QUIT: 
                 sys.exit(0) 
             else: pass
+
+
+#executable
+
+inp = "auto"  # manual or auto
+if inp == "auto":
+    rules = dict(P = "F+F+F+F")
+    program = "P"
+else:
+    rnumb = raw_input("[how much]")
+    rules = dict()
+#TODO: user input
+        
+        
+step = 30
+deep = 5
+alf = 0.0
+d_alf = 90.0
+
+
+program = GenProgram(program, rules, deep)
+
+draw(program, width / 2, height / 2, alf,  d_alf, step)
