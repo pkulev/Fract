@@ -1,57 +1,72 @@
 from math import sin, cos, pi
 
-window, step, alf, d_alf, stack = (0, 0, 0, 0, [])
-cur_x, cur_y = (0, 0)
-def init(params):
-    """params - list ?!?
-       initialize vm's global variables"""
-    assert type(params) == list or type(params) == dict or type(params) == tuple
-    global window, step, alf, d_alf
-    window, step, alf, d_alf, cur_x, cur_y = params
-    
-def GoForward(step):
-    global cur_x
-    global cur_y
+def GenProgram(current, rules, depth):
+    if depth == 0:
+        return current
+    else:
+        temp = ""
+        for command in current:
+            if command in rules:
+                temp += rules[command]
+            else:
+                temp += command
+        return GenProgram(temp, rules, depth - 1)
+
+#clean
+def GoForward(cur_x, cur_y, alf, step):
     new_x = cos(alf) * step + cur_x 
     new_y = sin(alf) * step + cur_y
-    #draw() 
     pygame.draw.line(window, (255, 255, 255), (cur_x, cur_y), (new_x, new_y))
-    #draw()
-    cur_x = new_x
-    cur_y = new_y
+    return (new_x, new_y)
     
-def TurnRight(d_alf):
-    global alf
+#clean
+def TurnRight(alf, d_alf):
+    """alf and d_alf are ints or floats
+       returns alf decreases by d_alf"""
     alf += pi / 180.0 * d_alf
+    return alf
 
-def TurnLeft(d_alf):
-    global alf
+#clean
+def TurnLeft(alf, d_alf):
+    """alf and d_alf are ints or floats
+       returns alf decreases by d_alf"""
     alf -= pi / 180.0 * d_alf
+    return alf
 
-def Push(st, elem):
-    st.append(elem)
-    return st
+#clean but not tested
+def Push(stack, element):
+    """stack is tuple, element is tuple like (x, y, angle)
+       returns stack with added element"""
+    assert type(stack) == type(element) == tuple and len(element) == 3
+    stack = stack + (element,)
+    return stack
 
+#clean but not tested
 def Pop(stack):
-    elem = stack.pop()
-    cur_x, cur_y, alf = elem
-    return elem
+    """stack is tuple with length > 0 contains tuples like (x, y, angle)
+       returns tuple stack with popped element and element (x, y, angle)"""
+    assert type(stack) == tuple and len(stack) > 0
+    element = stack[len(stack) - 1]
+    stack = stack[:-1]
+    return stack, element
 
-debug  = True
-
-def mainLoop(program):
+#eh, clean
+def draw(program, cur_x, cur_y, alf, d_alf, step):
+    debug  = True
+    stack = (cur_x, cur_y, alf)
     if debug:
         for command in program:
             if command == "F":
-                GoForward(step)
+                cur_x, cur_y = GoForward(cur_x, cur_y, alf, step)
             elif command == "+":
-                TurnRight(d_alf)
+                alf = TurnRight(alf, d_alf)
             elif command == "-":
-                TurnLeft(d_alf)
+                alf = TurnLeft(alf, d_alf)
             elif command == "[":
                 stack = Push(stack, (cur_x, cur_y, alf))
             elif command == "]":
-                Pop(stack)
+                stack, (cur_x, cur_y, alf) = Pop(stack)
+
     while True:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: 

@@ -94,8 +94,7 @@ if inp == "auto":
 else:
     rnumb = raw_input("[how much]")
     rules = dict()
-#TODO: user input
-        
+#TODO: user input        
         
 step = 30
 deep = 5
