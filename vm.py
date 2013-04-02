@@ -1,5 +1,5 @@
 from math import sin, cos, pi
-#
+
 def GenProgram(current, rules, depth):
     if depth == 0:
         return current

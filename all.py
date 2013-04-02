@@ -23,28 +23,24 @@ def GenProgram(current, rules, depth):
                 temp += command
         return GenProgram(temp, rules, depth - 1)
 
-#clean
 def GoForward(cur_x, cur_y, alf, step):
     new_x = cos(alf) * step + cur_x 
     new_y = sin(alf) * step + cur_y
     pygame.draw.line(window, (255, 255, 255), (cur_x, cur_y), (new_x, new_y))
     return (new_x, new_y)
     
-#clean
 def TurnRight(alf, d_alf):
     """alf and d_alf are ints or floats
        returns alf decreases by d_alf"""
     alf += pi / 180.0 * d_alf
     return alf
 
-#clean
 def TurnLeft(alf, d_alf):
     """alf and d_alf are ints or floats
        returns alf decreases by d_alf"""
     alf -= pi / 180.0 * d_alf
     return alf
 
-#clean but not tested
 def Push(stack, element):
     """stack is tuple, element is tuple like (x, y, angle)
        returns stack with added element"""
@@ -52,7 +48,6 @@ def Push(stack, element):
     stack = stack + (element,)
     return stack
 
-#clean but not tested
 def Pop(stack):
     """stack is tuple with length > 0 contains tuples like (x, y, angle)
        returns tuple stack with popped element and element (x, y, angle)"""
@@ -61,7 +56,6 @@ def Pop(stack):
     stack = stack[:-1]
     return stack, element
 
-#eh, clean
 def draw(program, cur_x, cur_y, alf, d_alf, step):
     debug  = True
     stack = (cur_x, cur_y, alf)
