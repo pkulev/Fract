@@ -1,5 +1,16 @@
 #!/usr/bin/env python
 
+import argparse
+
+parser = argparse.ArgumentParser(description = "some description")
+parser.add_argument("-v", dest = "accumulate", action = "store_const",
+                    const = sum, default = max, help = "coonst heelp")
+
+args = parser.parse_args()
+
+
+
+
 from vm1 import *
 
 import sys, pygame
