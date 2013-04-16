@@ -1,6 +1,6 @@
 from math import sin, cos, pi
-
 class VirtualMachine(object):
+
     def __init__(self, program, cur_x, cur_y, alf, d_alf, step):
         self.program = program
         self.cur_x = cur_x
@@ -8,66 +8,51 @@ class VirtualMachine(object):
         self.alf = alf
         self.d_alf = d_alf
         self.step = step
-        self.drawCallback = None
+        self.DrawCallback = None
+        self.EventCallback = None
+        self.stack = []
 
-    def GoForward(cur_x, cur_y, alf, step):
-        new_x = cos(alf) * step + cur_x 
-        new_y = sin(alf) * step + cur_y
-        drawCallback(cur_x, cur_y, new_x, new_y)
-        cur_x = new_x
-        cur_y = new_y
+    def SetEventCallback(self, callback):
+        self.EventCallback = callback
+    
+    def SetDrawCallback(self, callback):
+        self.DrawCallback = callback
+    
+    def GoForward(self):
+        new_x = cos(self.alf) * self.step + self.cur_x 
+        new_y = sin(self.alf) * self.step + self.cur_y
+        self.DrawCallback(self.cur_x, self.cur_y, new_x, new_y)
+        self.cur_x = new_x
+        self.cur_y = new_y
         
-    def TurnRight(alf, d_alf):
+    def TurnRight(self):
         """alf and d_alf are ints or floats
         returns alf decreases by d_alf"""
-        alf += pi / 180.0 * d_alf
-        return alf
-
-    def TurnLeft(alf, d_alf):
+        self.alf += pi / 180.0 * self.d_alf
+        
+    def TurnLeft(self):
         """alf and d_alf are ints or floats
         returns alf decreases by d_alf"""
-        alf -= pi / 180.0 * d_alf
-        return alf
+        self.alf -= pi / 180.0 * self.d_alf
+    
+    def ProcessEvents(self):
+        while True:
+                self.EventCallback()
 
-    def Push(stack, element):
-        """stack is tuple, element is tuple like (x, y, angle)
-        returns stack with added element"""
-        assert type(stack) == type(element) == tuple and len(element) == 3
-        stack = stack + (element,)
-        return stack
-
-    def Pop(stack):
-        """stack is tuple with length > 0 contains tuples like (x, y, angle)
-        returns tuple stack with popped element and element (x, y, angle)"""
-        assert type(stack) == tuple and len(stack) > 0
-        element = stack[len(stack) - 1]
-        stack = stack[:-1]
-        return stack, element
-    def wait():
-        raise NotImplementedError
-
-    def draw(program, cur_x, cur_y, alf, d_alf, step):
+    def Draw(self):
         debug  = True
-        stack = (cur_x, cur_y, alf)
+        self.stack = (self.cur_x, self.cur_y, self.alf)
         if debug:
-            for command in program:
+            for command in self.program:
                 if command == "F":
-                    cur_x, cur_y = GoForward(cur_x, cur_y, alf, step)
+                    self.GoForward()
                 elif command == "+":
-                    alf = TurnRight(alf, d_alf)
+                    self.TurnRight()
                 elif command == "-":
-                    alf = TurnLeft(alf, d_alf)
+                    selfTurnLeft()
                 elif command == "[":
-                    stack = Push(stack, (cur_x, cur_y, alf))
+                    self.stack.append(self.cur_x, self.cur_y, self.alf)
                 elif command == "]":
-                    stack, (cur_x, cur_y, alf) = Pop(stack)
-                    
-        wait()
-
-            #while True:
-            #for event in pygame.event.get(): 
-            #    if event.type == pygame.QUIT: 
-            #        sys.exit(0) 
-            #    else: pass
+                    (self.cur_x, self.cur_y, self.alf) = self.stack.pop()
         
-
+        self.ProcessEvents()
