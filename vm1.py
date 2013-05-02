@@ -1,8 +1,8 @@
 from math import sin, cos, pi
 class VirtualMachine(object):
 
-    def __init__(self, program, cur_x, cur_y, alf, d_alf, step):
-        self.program = program
+    def __init__(self, cur_x, cur_y, alf, d_alf, step):
+        self.program = ""#program
         self.cur_x = cur_x
         self.cur_y = cur_y
         self.alf = alf
@@ -49,10 +49,24 @@ class VirtualMachine(object):
                 elif command == "+":
                     self.TurnRight()
                 elif command == "-":
-                    selfTurnLeft()
+                    self.TurnLeft()
                 elif command == "[":
                     self.stack.append(self.cur_x, self.cur_y, self.alf)
                 elif command == "]":
                     (self.cur_x, self.cur_y, self.alf) = self.stack.pop()
         
         self.ProcessEvents()
+
+    def Process(self, current, rules, depth):
+        if depth == 0:
+            return current
+        else:
+            temp = ""
+            for command in current:
+                if command in rules:
+                    self.program += rules[command]#temp += rules[command]
+                else:
+                    self.program += command#temp += command
+        print self.program
+        self.Draw()
+        return self.Process(self.program, rules, depth - 1)
