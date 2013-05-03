@@ -10,10 +10,12 @@ args = parser.parse_args()
 
 
 
-
 from vm1 import *
 
-import sys, pygame
+import sys 
+import pygame
+from pygame.locals import *
+
 
 #view
 pygame.init()
@@ -39,10 +41,12 @@ def DrawCallback(cur_x, cur_y, new_x, new_y):
 
 def EventCallback():
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == QUIT:
+            pygame.quit()
             sys.exit(0)
         else: 
             print event
+    pygame.display.update()
 
 vm.SetDrawCallback(DrawCallback)
 vm.SetEventCallback(EventCallback)
