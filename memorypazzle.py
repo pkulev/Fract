@@ -113,22 +113,53 @@ class game(object):
             result.append(theList[i:i + groupSize])
         return result
 
-    def leftTopCoordsOfBox(boxx, boxy):
+    def leftTopCoordsOfBox(self, boxx, boxy):
         #convert board coords to pixel coords
         print("From LTCOB: boxx = " + str(boxx) + " ; boxSize = " + str(self.boxSize) + \
-                  " ; gapSize = " + str(self.gapSize) + " ; xmargin = " + str(self.xmargin))
+                  " ; gapSize = " + str(self.gapSize) + " ; xmargin = " + str(self.xMargin))
 
-        left = boxx * (self.boxSize + self.gapSize) + self.xmargin
+        left = boxx * (self.boxSize + self.gapSize) + self.xMargin
         print("left = " + str(left))
-        print("boxy = " + str(boxy) + " boxSize + gapSize ; ymargin = " + str(self.ymargin))
-        top = boxy * (self.boxSize + self.gapSize) + self.ymargin
+        print("boxy = " + str(boxy) + " boxSize + gapSize ; ymargin = " + str(self.yMargin))
+        top = boxy * (self.boxSize + self.gapSize) + self.yMargin
         print("top = " + str(top))
+        return (left, top)
 
     def startGameAnimation(self, stub):
         print "SGA STUB!"
 
-    def getBoxAtPixel(self, stub_1, stub_2):
-        return (0, 0)
+    def getBoxAtPixel(self, x, y):
+        for boxx in xrange(self.boardWidth):
+            for boxy in xrange(self.boardHeight):
+                left, top = self.leftTopCoordsOfBox(boxx, boxy)
+                boxRect = pygame.Rect(left, top, self.boxSize, self.boxSize)
+                if boxRect.collidepoint(x, y):
+                    return (boxx, boxy)
+        return (None, None)
+
+    def drawIcon(self, shape, color, boxx, boxy):
+        quarter = int(self.boxSize * 0.25)
+        half    = int(self.boxSize * 0.5)
+
+        left, top = self.leftTopCoordsOfBox(boxx, boxy) # get pixel coords from board coords
+        #draw shapes
+        if shape == self.donut:
+            pygame.draw.circle(self.display, color, (left + half, top + half), half - 5)
+            pygame.draw.circle(self.display, self.bgColor, (left + half, top + half), quarter - 5)
+        elif shape == self.square:
+            pygame.draw.rect(self.display, color, 
+                             (left + quarter, top + quater, self.boxSize - half, self.boxSize - half)) 
+        elif shape == self.diamond:
+            pygame.draw.polygon(self.display, color, ((left + half, top), 
+                                                      (left + self.boxSize - 1, top + half),
+                                                      (left + half, top + self.boxSize - 1),
+                                                      (left, top + half)))
+        elif shape == self.lines:
+            for i in xrange(0, self.boxSize, 4):
+                pygame.draw.line(self.display, color, (left, top + i), (left + i, top))
+                pygame.draw.line(self.display, color, (left + i, top + self.boxSize - 1), 
+                                 (left + self.boxSize - 1, top + i))
+
 
     def drawHighlightBox(self, stub_1, stub_2):
         pass
