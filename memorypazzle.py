@@ -77,12 +77,53 @@ class game(object):
     def quit(self):
         pass
 
-    def getRandomizedBoard(stub):
-        return None
+    def getRandomizedBoard(self):
+        # Get a list of every possible shape in every possible color
+        icons = []
+        for color in self.allColors:
+            for shape in self.allShapes:
+                icons.append((shape, color))
 
-    def generateRevealedBoxesData(stub,stub_):
-        return [[None], [None]]
-    
+        random.shuffle(icons) # randomize the order of the icons list
+        numIconsUsed = int(self.boardWidth * self.boardHeight / 2) # how many icons need
+        icons = icons[:numIconsUsed] * 2 # make two of each
+        random.shuffle(icons)
+        
+        #create the board data structure, with randomly placed icons
+        board = []
+        for x in xrange(self.boardWidth):
+            column = []
+            for y in xrange(self.boardHeight):
+                column.append(icons[0])
+                del icons[0] #remove the icon as we assign it
+                board.append(column)
+            return board
+        
+    def generateRevealedBoxesData(self, val):
+        revealedBoxes = []
+        for i in xrange(self.boardWidth):
+            revealedBoxes.append([val] * self.boardHeight)
+        return revealedBoxes
+
+    def splitIntoGroupsOf(groupSize, theList):
+        #splits a list into a list of lists, where the inner lists have
+        #the most groupSize number of items
+        result = []
+        for i in xrange(0, len(theList), groupSize):
+            result.append(theList[i:i + groupSize])
+        return result
+
+    def leftTopCoordsOfBox(boxx, boxy):
+        #convert board coords to pixel coords
+        print("From LTCOB: boxx = " + str(boxx) + " ; boxSize = " + str(self.boxSize) + \
+                  " ; gapSize = " + str(self.gapSize) + " ; xmargin = " + str(self.xmargin))
+
+        left = boxx * (self.boxSize + self.gapSize) + self.xmargin
+        print("left = " + str(left))
+        print("boxy = " + str(boxy) + " boxSize + gapSize ; ymargin = " + str(self.ymargin))
+        top = boxy * (self.boxSize + self.gapSize) + self.ymargin
+        print("top = " + str(top))
+
     def startGameAnimation(self, stub):
         print "SGA STUB!"
 
