@@ -34,20 +34,25 @@ class game(object):
         self.caty = 10
         self.direction = 'right'
         self.fontObj = pygame.font.Font('freesansbold.ttf', 16)
-        self.mytext = self.fontObj.render("L", True, RED, WHITE)
+        self.mytext = self.fontObj.render("L", True, RED)
         self.mytextRect = self.mytext.get_rect()
         self.mytextRect.center = (self.mycat.get_width() / 2, self.mycat.get_height() / 2)
         self.textSurfaceObj = self.fontObj.render(self.direction, True, BLACK, WHITE)
         self.textRectObj = self.textSurfaceObj.get_rect()
         self.textRectObj.center = (200, 150)
 
+        self.soundObj = pygame.mixer.Sound('res/beeps.wav')
+        self.soundObj.play()
+        pygame.mixer.music.load('res/runaway.mp3')
+        pygame.mixer.music.play(-1, 0.0)
+        
     def init(self):
         pass
 
     def quit(self):
         pass
     def setText(self,string):
-        self.mytext = self.fontObj.render(str(id(self.catImg) == id(self.mycat)),True,BLACK,WHITE)#string, True, textSurfaceObj  BLACK, WHITE)
+        self.mytext = self.fontObj.render(str(id(self.catImg) == id(self.mycat)),True,BLACK)#string, True, textSurfaceObj  BLACK, WHITE)
 
     def handleEvents(self):
         for event in pygame.event.get():
@@ -63,19 +68,23 @@ class game(object):
             self.catx += 5
             if self.catx == 280:
                 self.direction = 'down'
+                self.soundObj.stop()
         elif self.direction == 'down':
             self.caty += 5
             if self.caty == 220:
                 self.direction = 'left'
+                self.soundObj.play()
         elif self.direction == 'left':
             self.catx -= 5
             if self.catx == 10:
                 self.direction = 'up'
+                self.soundObj.stop()
         elif self.direction == 'up':
             self.caty -= 5
             if self.caty == 10:
                 self.direction = 'right'
-        
+                self.soundObj.play()
+            
 
     def drawScreen(self):
         self.display.fill(WHITE)
