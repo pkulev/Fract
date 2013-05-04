@@ -159,16 +159,55 @@ class game(object):
                 pygame.draw.line(self.display, color, (left, top + i), (left + i, top))
                 pygame.draw.line(self.display, color, (left + i, top + self.boxSize - 1), 
                                  (left + self.boxSize - 1, top + i))
+        elif shape == self.oval:
+            pygame.draw.ellipse(self.display, color, (left, top + quater, self.boxSize, half))
 
+    def getShapeAndColor(board, boxx, boxy):
+        #shape value for x, y spot is stored in board[x][y][0]
+        #color value for x, y spot is stored in board[x][y][1]
+        return board[boxx][boxy][0], board[boxx][boxy][1]
+
+    def drawboxcovers(self, board, boxes, coverage):
+        #Draws boxes being covered/revealed. "boxes" is a list
+        #of two-item lists, which have the x & y spot of the box/
+        for box in boxes:
+            left, top = self.leftTopCoordsOfBox(box[0], box[1])
+            pygame.draw.rect(self.display, self.bgColor, (left, top, self.boxSize, self.boxSize))
+            shape, color = getShapeAndColor(board, box[0], box[1])
+            self.drawIcon(shape, color, box[0], box[1])
+            if coverage > 0: #only draw the cover if there is an coverage
+                pygame.draw.rect(self.display, self.boxColor, (left, top, coverage, self.boxSize))
+            
 
     def drawHighlightBox(self, stub_1, stub_2):
         pass
 
-    def drawBoard(self, stub_1, stub_2):
-        pass
+    def revealBoxesAnimation(self, board, boxesToReveal):
+        #do the box reveal animation
+        for coverage in xrange(self.boxSize, (-self.revealSpeed) - 1, -self.revealSpeed):
+            self.drawBoxCovers(boxSize, boxesToReveal, coverage)
 
-    def revealBoxesAnimation(self, stub_1, stub_2):
-        pass
+    def coverBoxesAnimation(self, board, boxesToCover):
+        #do the box cover animation
+        for coverage in xrange(0, self.boxSize + self.revealSpeed, self.revealSpeed):
+            self.drawBoxCovers(board, boxesToCover, coverage)
+    
+
+    def drawBoard(self, board, revealed):
+        #draws all of the boxes in their covered or revealed state
+        for boxx in xrange(self.boardWidth):
+            for boxy in xrange(self.boardHeight):
+                left, top = self.leftTopCoordsOfBox(boxx, boxy)
+                if not revealed[boxx][boxy]:
+                #Draw a covered box
+                    pygame.draw.rect(self.display, self.boxColor, (left, top, self.boxSize, self.boxSize))
+                else:
+                    #Draw a revealed icon
+                    shape, color = self.getShapeAndColor(board, boxx, boxy)
+                    drawIcon(shape, color, boxx, boxy)
+                    
+        
+
 
     def handleEvents(self):
         self.mouseClicked = False
