@@ -105,7 +105,7 @@ class game(object):
             revealedBoxes.append([val] * self.boardHeight)
         return revealedBoxes
 
-    def splitIntoGroupsOf(groupSize, theList):
+    def splitIntoGroupsOf(self, groupSize, theList):
         #splits a list into a list of lists, where the inner lists have
         #the most groupSize number of items
         result = []
@@ -124,9 +124,6 @@ class game(object):
         top = boxy * (self.boxSize + self.gapSize) + self.yMargin
         print("top = " + str(top))
         return (left, top)
-
-    def startGameAnimation(self, stub):
-        print "SGA STUB!"
 
     def getBoxAtPixel(self, x, y):
         for boxx in xrange(self.boardWidth):
@@ -162,12 +159,12 @@ class game(object):
         elif shape == self.oval:
             pygame.draw.ellipse(self.display, color, (left, top + quater, self.boxSize, half))
 
-    def getShapeAndColor(board, boxx, boxy):
+    def getShapeAndColor(self, board, boxx, boxy):
         #shape value for x, y spot is stored in board[x][y][0]
         #color value for x, y spot is stored in board[x][y][1]
         return board[boxx][boxy][0], board[boxx][boxy][1]
 
-    def drawboxcovers(self, board, boxes, coverage):
+    def drawBoxCovers(self, board, boxes, coverage):
         #Draws boxes being covered/revealed. "boxes" is a list
         #of two-item lists, which have the x & y spot of the box/
         for box in boxes:
@@ -177,10 +174,8 @@ class game(object):
             self.drawIcon(shape, color, box[0], box[1])
             if coverage > 0: #only draw the cover if there is an coverage
                 pygame.draw.rect(self.display, self.boxColor, (left, top, coverage, self.boxSize))
-            
-
-    def drawHighlightBox(self, stub_1, stub_2):
-        pass
+        pygame.display.update()
+        self.fpsClock.tick(self.FPS)
 
     def revealBoxesAnimation(self, board, boxesToReveal):
         #do the box reveal animation
@@ -191,7 +186,6 @@ class game(object):
         #do the box cover animation
         for coverage in xrange(0, self.boxSize + self.revealSpeed, self.revealSpeed):
             self.drawBoxCovers(board, boxesToCover, coverage)
-    
 
     def drawBoard(self, board, revealed):
         #draws all of the boxes in their covered or revealed state
@@ -206,7 +200,45 @@ class game(object):
                     shape, color = self.getShapeAndColor(board, boxx, boxy)
                     drawIcon(shape, color, boxx, boxy)
                     
+    def drawHighlightBox(self, boxx, boxy):
+        left, top = self.leftTopCoordsOfBox(boxx, boxy)
+        pygame.draw.rect(self.display, self.hightLightColor, 
+                         (left - 5, top - 5, self.boxSize + 10, self.boxSize + 10), 4)
         
+    def startGameAnimation(self, board):
+        #Randomly reveal the boxes 8 at a time
+        coveredBoxes = self.generateRevealedBoxesData(False)
+        boxes = []
+        for x in xrange(self.boardWidth):
+            for y in xrange(self.boardHeight):
+                boxes.append((x, y))
+        random.shuffle(boxes)
+        boxGroup = self.splitIntoGroupsOf(8, boxes)
+        
+        self.drawBoard(board, boxGroup)
+        for boxGroup in boxGroups:
+            self.revealBoxesAnimation(board, boxGroup)
+            self.coverBoxesAnimation(board, boxGroup)
+
+    def gameWonAnimation(self, board):
+        #flash the background color when player has won
+        coveredBoxes = self.generateRevealedBoxesData(True)
+        color1 = self.lightBgColor
+        color2 = self.bgColor
+
+        for i in xrange(13):
+            color1, color2 = color2, color1
+            self.display.fill(color1)
+            self.drawBoard(board, coveredBoxes)
+            pygame.display.update()
+            pygame.time.wait(300)
+        
+    def hasWon(revealedBoxes):
+        #Returns True if all the boxes have been revealed, otherwise False
+        for i in revealedBoxes:
+            if False in i:
+                return False #return False if any boxes are covered
+        return True
 
 
     def handleEvents(self):
@@ -245,9 +277,12 @@ class game(object):
                         #icons don't match. Re-cover up both selections
                         pygame.time.wait(1000) #1 sec
                         self.coverBoxesAnimation(self.mainBoard,
-                                                 [(self.firstSelection[0], self.firstSelection[1])], 
-                                                 (self.boxx, self.boxy))
+                                                 [(self.firstSelection[0], self.firstSelection[1]), 
+                                                 (self.boxx, self.boxy)])
+
                         
+
+
     def drawScreen(self):
         self.display.fill(self.bgColor)
         self.drawBoard(self.mainBoard, self.revealedBoxes)
@@ -256,9 +291,14 @@ class game(object):
         self.fpsClock.tick(self.FPS)
 
 
-memgame = game()
 
-while True:
-    memgame.handleEvents()
-    memgame.updateState()
-    memgame.drawScreen()
+
+def main():
+    memgame = game()
+    while True:
+        memgame.handleEvents()
+        memgame.updateState()
+        memgame.drawScreen()
+
+if __name__ == '__main__':
+    main()
