@@ -66,7 +66,7 @@ class game(object):
         self.boxx = 0
         self.boxy = 0
 
-        self.mainBoard = None
+        self.mainBoard = self.getRandomizedBoard()
         
         self.display.fill(self.bgColor)
         self.startGameAnimation(self.mainBoard)
@@ -91,9 +91,9 @@ class game(object):
         
         #create the board data structure, with randomly placed icons
         board = []
-        for x in xrange(self.boardWidth):
+        for x in range(self.boardWidth):
             column = []
-            for y in xrange(self.boardHeight):
+            for y in range(self.boardHeight):
                 column.append(icons[0])
                 del icons[0] #remove the icon as we assign it
                 board.append(column)
@@ -101,7 +101,7 @@ class game(object):
         
     def generateRevealedBoxesData(self, val):
         revealedBoxes = []
-        for i in xrange(self.boardWidth):
+        for i in range(self.boardWidth):
             revealedBoxes.append([val] * self.boardHeight)
         return revealedBoxes
 
@@ -126,8 +126,8 @@ class game(object):
         return (left, top)
 
     def getBoxAtPixel(self, x, y):
-        for boxx in xrange(self.boardWidth):
-            for boxy in xrange(self.boardHeight):
+        for boxx in range(self.boardWidth):
+            for boxy in range(self.boardHeight):
                 left, top = self.leftTopCoordsOfBox(boxx, boxy)
                 boxRect = pygame.Rect(left, top, self.boxSize, self.boxSize)
                 if boxRect.collidepoint(x, y):
@@ -145,7 +145,7 @@ class game(object):
             pygame.draw.circle(self.display, self.bgColor, (left + half, top + half), quarter - 5)
         elif shape == self.square:
             pygame.draw.rect(self.display, color, 
-                             (left + quarter, top + quater, self.boxSize - half, self.boxSize - half)) 
+                             (left + quarter, top + quarter, self.boxSize - half, self.boxSize - half)) 
         elif shape == self.diamond:
             pygame.draw.polygon(self.display, color, ((left + half, top), 
                                                       (left + self.boxSize - 1, top + half),
@@ -157,7 +157,7 @@ class game(object):
                 pygame.draw.line(self.display, color, (left + i, top + self.boxSize - 1), 
                                  (left + self.boxSize - 1, top + i))
         elif shape == self.oval:
-            pygame.draw.ellipse(self.display, color, (left, top + quater, self.boxSize, half))
+            pygame.draw.ellipse(self.display, color, (left, top + quarter, self.boxSize, half))
 
     def getShapeAndColor(self, board, boxx, boxy):
         #shape value for x, y spot is stored in board[x][y][0]
@@ -170,7 +170,7 @@ class game(object):
         for box in boxes:
             left, top = self.leftTopCoordsOfBox(box[0], box[1])
             pygame.draw.rect(self.display, self.bgColor, (left, top, self.boxSize, self.boxSize))
-            shape, color = getShapeAndColor(board, box[0], box[1])
+            shape, color = self.getShapeAndColor(board, box[0], box[1])
             self.drawIcon(shape, color, box[0], box[1])
             if coverage > 0: #only draw the cover if there is an coverage
                 pygame.draw.rect(self.display, self.boxColor, (left, top, coverage, self.boxSize))
@@ -179,18 +179,18 @@ class game(object):
 
     def revealBoxesAnimation(self, board, boxesToReveal):
         #do the box reveal animation
-        for coverage in xrange(self.boxSize, (-self.revealSpeed) - 1, -self.revealSpeed):
-            self.drawBoxCovers(boxSize, boxesToReveal, coverage)
+        for coverage in range(self.boxSize, (-self.revealSpeed) - 1, -self.revealSpeed):
+            self.drawBoxCovers(board, boxesToReveal, coverage)
 
     def coverBoxesAnimation(self, board, boxesToCover):
         #do the box cover animation
-        for coverage in xrange(0, self.boxSize + self.revealSpeed, self.revealSpeed):
+        for coverage in range(0, self.boxSize + self.revealSpeed, self.revealSpeed):
             self.drawBoxCovers(board, boxesToCover, coverage)
 
     def drawBoard(self, board, revealed):
         #draws all of the boxes in their covered or revealed state
-        for boxx in xrange(self.boardWidth):
-            for boxy in xrange(self.boardHeight):
+        for boxx in range(self.boardWidth):
+            for boxy in range(self.boardHeight):
                 left, top = self.leftTopCoordsOfBox(boxx, boxy)
                 if not revealed[boxx][boxy]:
                 #Draw a covered box
@@ -209,13 +209,13 @@ class game(object):
         #Randomly reveal the boxes 8 at a time
         coveredBoxes = self.generateRevealedBoxesData(False)
         boxes = []
-        for x in xrange(self.boardWidth):
-            for y in xrange(self.boardHeight):
+        for x in range(self.boardWidth):
+            for y in range(self.boardHeight):
                 boxes.append((x, y))
         random.shuffle(boxes)
-        boxGroup = self.splitIntoGroupsOf(8, boxes)
+        boxGroups = self.splitIntoGroupsOf(8, boxes)
         
-        self.drawBoard(board, boxGroup)
+        self.drawBoard(board, coveredBoxes)
         for boxGroup in boxGroups:
             self.revealBoxesAnimation(board, boxGroup)
             self.coverBoxesAnimation(board, boxGroup)
@@ -279,6 +279,25 @@ class game(object):
                         self.coverBoxesAnimation(self.mainBoard,
                                                  [(self.firstSelection[0], self.firstSelection[1]), 
                                                  (self.boxx, self.boxy)])
+                        self.revealedBoxes[self.firstSelection[0]][firstSelection[1]] = False
+                        self.revealedBoxes[self.boxx][self.boxy] = False
+                    elif self.hasWon(self.revealedBoxes): #check if all pairs found
+                        self.gameWonAnimation(self.mainBoard)
+                        pygame.time.wait(2000)
+                        
+                        #reset the board
+                        self.mainBoard = self.getRandomizedBoard()
+                        self.revealedBoxes = self.generateRevealedBoxesData(False)
+
+                        #Show the fully unrevealed board for a second.
+                        self.drawBoard(self.mainBoard, self.revealedBoxes)
+                        pygame.display.update()
+                        pygame.time.wait(1000)
+
+                        #replay the start game animation.
+                        self.startGameAnimation(self.mainBoard)
+                    self.firstSelection = None
+        pygame.display.update()
 
                         
 
