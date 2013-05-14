@@ -23,19 +23,19 @@ width = 640
 height = 480
 window = pygame.display.set_mode((width, height))
 
-
 rules = dict(X = "X+YF", Y = "FX-Y")
 program = "FX"
         
+#args = dict(
 step = 5
 deep = 50
 alf = 0.0
 d_alf = 90.0
-
-
-#program = GenProgram(program, rules, deep)
+#            )
 
 vm = VirtualMachine(width / 2, height /2, alf, d_alf, step)
+#vm = VirtualMachine(**args)
+
 def DrawCallback(cur_x, cur_y, new_x, new_y):
     pygame.draw.line(window, (255, 255, 255), (cur_x, cur_y), (new_x, new_y))
 
@@ -50,5 +50,17 @@ def EventCallback():
 
 vm.SetDrawCallback(DrawCallback)
 vm.SetEventCallback(EventCallback)
-#vm.Draw()
+
 vm.Process(program, rules, deep)
+
+
+
+
+
+
+
+
+
+
+
+
