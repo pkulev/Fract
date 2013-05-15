@@ -56,7 +56,10 @@ class VirtualMachine(object):
                     (self.cur_x, self.cur_y, self.alf) = self.stack.pop()
         
         self.ProcessEvents()
-
+# FIX:
+#    def Process( ):
+#        cur_program = 
+#
     def Process(self, current, rules, depth):
         if depth == 0:
             return current
