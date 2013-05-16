@@ -9,7 +9,6 @@ parser.add_argument("-v", dest = "accumulate", action = "store_const",
 args = parser.parse_args()
 
 
-
 from vm1 import *
 
 import sys 
@@ -26,6 +25,15 @@ window = pygame.display.set_mode((width, height))
 rules = dict(X = "X+YF", Y = "FX-Y")
 program = "FX"
         
+'''args = {
+          "program" = program,
+          "rules"   = rules,
+          "step"    = step,
+          "deep"    = deep,
+          "alf"     = alf,
+          d_alf"    = d_alf
+          }'''
+
 #args = dict(
 step = 5
 deep = 50

@@ -2,7 +2,7 @@ from math import sin, cos, pi
 class VirtualMachine(object):
 
     def __init__(self, cur_x, cur_y, alf, d_alf, step):
-        self.program = ""#program
+        self.program = ""
         self.cur_x = cur_x
         self.cur_y = cur_y
         self.alf = alf
@@ -58,7 +58,9 @@ class VirtualMachine(object):
         self.ProcessEvents()
 # FIX:
 #    def Process( ):
-#        cur_program = 
+#        cur_program = genNextStep( )
+#        self.program = cur_program
+#        draw
 #
     def Process(self, current, rules, depth):
         if depth == 0:
