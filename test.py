@@ -18,11 +18,13 @@ from pygame.locals import *
 
 #view
 pygame.init()
-width = 640
-height = 480
+width = 800
+height = 600
 window = pygame.display.set_mode((width, height))
 
 rules = dict(X = "X+YF", Y = "FX-Y")
+#rules = dict(X = "AB", B = "A")
+
 program = "FX"
         
 '''args = {
@@ -35,17 +37,18 @@ program = "FX"
           }'''
 
 #args = dict(
-step = 5
-deep = 50
+step = 10
+deep = 10
 alf = 0.0
 d_alf = 90.0
 #            )
 
-vm = VirtualMachine(width / 2, height /2, alf, d_alf, step)
+vm = VirtualMachine(program, rules, deep, width / 2, height /2, alf, d_alf, step)
 #vm = VirtualMachine(**args)
 
 def DrawCallback(cur_x, cur_y, new_x, new_y):
     pygame.draw.line(window, (255, 255, 255), (cur_x, cur_y), (new_x, new_y))
+    pygame.display.update()
 
 def EventCallback():
     for event in pygame.event.get():
@@ -54,21 +57,8 @@ def EventCallback():
             sys.exit(0)
         else: 
             print event
-    pygame.display.update()
 
 vm.SetDrawCallback(DrawCallback)
 vm.SetEventCallback(EventCallback)
 
-vm.Process(program, rules, deep)
-
-
-
-
-
-
-
-
-
-
-
-
+vm.Process()

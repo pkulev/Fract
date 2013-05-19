@@ -1,8 +1,11 @@
 from math import sin, cos, pi
 class VirtualMachine(object):
 
-    def __init__(self, cur_x, cur_y, alf, d_alf, step):
-        self.program = ""
+    def __init__(self,program, rules, depth, cur_x, cur_y, alf, d_alf, step):
+        self.program = program
+        self.rules = rules
+        self.depth = depth
+        
         self.cur_x = cur_x
         self.cur_y = cur_y
         self.alf = alf
@@ -11,6 +14,8 @@ class VirtualMachine(object):
         self.DrawCallback = None
         self.EventCallback = None
         self.stack = []
+
+        
 
     def SetEventCallback(self, callback):
         self.EventCallback = callback
@@ -54,24 +59,20 @@ class VirtualMachine(object):
                     self.stack.append(self.cur_x, self.cur_y, self.alf)
                 elif command == "]":
                     (self.cur_x, self.cur_y, self.alf) = self.stack.pop()
-        
-        self.ProcessEvents()
-# FIX:
-#    def Process( ):
-#        cur_program = genNextStep( )
-#        self.program = cur_program
-#        draw
-#
-    def Process(self, current, rules, depth):
-        if depth == 0:
-            return current
-        else:
-            temp = ""
-            for command in current:
-                if command in rules:
-                    self.program += rules[command]#temp += rules[command]
+
+    def Process(self):
+        def MakeNewProgram(self): #TODO: function name
+            cur_program = ""
+            for command in self.program:
+                if command in self.rules:
+                    cur_program += self.rules[command]
                 else:
-                    self.program += command#temp += command
-        print self.program
-        self.Draw()
-        return self.Process(self.program, rules, depth - 1)
+                    cur_program += command
+            self.program = cur_program
+
+        while self.depth > 0:
+            MakeNewProgram(self)
+            self.Draw()
+            self.depth -= 1
+
+        self.ProcessEvents()
