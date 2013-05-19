@@ -22,29 +22,21 @@ width = 800
 height = 600
 window = pygame.display.set_mode((width, height))
 
-rules = dict(X = "X+YF", Y = "FX-Y")
-#rules = dict(X = "AB", B = "A")
+
 
 program = "FX"
-        
-'''args = {
-          "program" = program,
-          "rules"   = rules,
-          "step"    = step,
-          "deep"    = deep,
-          "alf"     = alf,
-          d_alf"    = d_alf
-          }'''
+rules = dict(X = "X+YF", Y = "FX-Y")
 
-#args = dict(
-step = 10
-deep = 10
+depth = 10
+center_x = width / 2
+center_y = height / 2
 alf = 0.0
 d_alf = 90.0
-#            )
+step = 10
 
-vm = VirtualMachine(program, rules, deep, width / 2, height /2, alf, d_alf, step)
-#vm = VirtualMachine(**args)
+args = (program, rules, depth, center_x, center_y, alf, d_alf, step)
+
+vm = VirtualMachine(*args)
 
 def DrawCallback(cur_x, cur_y, new_x, new_y):
     pygame.draw.line(window, (255, 255, 255), (cur_x, cur_y), (new_x, new_y))
