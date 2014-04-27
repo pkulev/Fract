@@ -9,7 +9,7 @@ parser.add_argument("-v", dest = "accumulate", action = "store_const",
 args = parser.parse_args()
 
 
-from vm1 import *
+from vm import *
 
 import sys 
 import pygame
