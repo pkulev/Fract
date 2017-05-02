@@ -1,0 +1,31 @@
+
+<form method="POST", action="/submit">
+  {{ form.csrf_token }}
+  <table>
+    <tr>
+      <td>{{ form.depth.label }}</td> <td>{{form.depth() }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.program.label }}</td> <td>{{ form.program(size=20) }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.rule1.label }}</td> <td>{{ form.rule1(size=20) }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.rule2.label }}</td> <td>{{ form.rule2(size=20) }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.rule3.label }}</td> <td>{{ form.rule3(size=20) }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.start_angle.label }}</td> <td>{{ form.start_angle(size=20) }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.delta_angle.label }}</td> <td>{{ form.delta_angle(size=20) }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.step.label }}</td> <td>{{ form.step(size=20) }}</td>
+    </tr>
+  </table>
+  <input type="submit" value="Go">
+</form>
