@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
+import argparse
+
 from flask import Flask, redirect, render_template, url_for
 
+import pilfract
 from forms import FractalArgumentsForm
 
 
@@ -18,27 +21,21 @@ def index():
 
 @app.route("/submit", methods=["GET", "POST"])
 def submit():
+    path = "static/output.png"
     form = FractalArgumentsForm()
     if form.validate_on_submit():
-        import main, sys
-        sys.argv = [
-            "-d", form.depth.data,
-            "-p", form.program.data,
-            "-r", form.rule1.data,  # TODO FIXME: oh my
-            "-sa", form.start_angle.data,
-            "-da", form.delta_angle.data,
-            "-s", form.step.data,
-        ]
+        args = argparse.Namespace(
+            depth=form.depth.data,
+            program=form.program.data,
+            rules=form.rules.data,
+            start_angle=form.start_angle.data,
+            delta_angle=form.delta_angle.data,
+            step=form.step.data,
+            view=False, output=path)
 
-        main.main()
-        
-        return redirect("/success")
+        pilfract.main(args)
+        return render_template("fractal.html", path=path)
     return render_template("index.html", form=form)
-
-
-@app.route("/success")
-def success():
-    return "<img src='templates/output.png'>Fooraqtal</img>"
 
 
 app.run("0.0.0.0", 8080)
