@@ -1,6 +1,7 @@
 """Fractal L-system virtual machine.
 
-Set 'event' and 'draw' callbacks to draw result.
+Set 'cb_finish' and 'cb_draw' callbacks to draw result.
+Set 'cb_before' and 'cb_after' callbacks to do something in loop.
 """
 
 from math import sin, cos, pi
@@ -16,36 +17,42 @@ class VirtualMachine(object):
         self._program = program
         self._rules = rules
         self._depth = depth
-
         self._cur_x = start_x
         self._cur_y = start_y
         self._alf = start_angle
         self._d_alf = delta_angle
         self._step = step
-        self._draw_cb = None
-        self._event_cb = None
+
+        self.cb_before = None
+        self.cb_after = None
+        self.cb_finish = None
+        self.cb_draw = None
+
         self._stack = []
 
-    @property
-    def events(self):
-        return self._event_cb
+    def process(self):
+        """Main loop of L-System."""
 
-    @events.setter
-    def events(self, callback):
-        self._event_cb = callback
+        while self._depth > 0:
+            if self.cb_before:
+                self.cb_before()
 
-    @property
-    def draw(self):
-        return self._draw_cb
+            self._expand_step()
+            self._draw()
+            self._depth -= 1
 
-    @draw.setter
-    def draw(self, callback):
-        self._draw_cb = callback
+            if self.cb_after:
+                self.cb_after()
+
+        if self.cb_finish:
+            self.cb_finish()
 
     def _forward(self):
+        """Move forward."""
+
         new_x = cos(self._alf) * self._step + self._cur_x
         new_y = sin(self._alf) * self._step + self._cur_y
-        self._draw_cb(self._cur_x, self._cur_y, new_x, new_y)
+        self.cb_draw(self._cur_x, self._cur_y, new_x, new_y)
         self._cur_x = new_x
         self._cur_y = new_y
 
@@ -53,7 +60,7 @@ class VirtualMachine(object):
         """Turn right.
 
         alf and d_alf are ints or floats
-        returns alf decreases by d_alf.
+        returns alf decreased by d_alf.
         """
         self._alf += pi / 180.0 * self._d_alf
 
@@ -61,41 +68,42 @@ class VirtualMachine(object):
         """Turn left.
 
         alf and d_alf are ints or floats
-        returns alf decreases by d_alf
+        returns alf decreased by d_alf
         """
         self._alf -= pi / 180.0 * self._d_alf
 
-    def _process_events(self):
-        while True:
-            self._event_cb()
+    def _push(self):
+        """Push position and angle to stack."""
+
+        self._stack.append((self._cur_x, self._cur_y, self._alf))
+
+    def _pop(self):
+        """Pop to stack and update position and angle."""
+
+        self._cur_x, self._cur_y, self._alf = self._stack.pop()
 
     def _draw(self):
-        self._stack = (self._cur_x, self._cur_y, self._alf)
+        """Do action by command."""
+
+        commands = {
+            "F": self._forward,
+            "+": self._turn_right,
+            "-": self._turn_left,
+            "[": self._push,
+            "]": self._pop,
+        }
+
         for command in self._program:
-            if command == "F":
-                self._forward()
-            elif command == "+":
-                self._turn_right()
-            elif command == "-":
-                self._turn_left()
-            elif command == "[":
-                self._stack.append(self._cur_x, self._cur_y, self._alf)
-            elif command == "]":
-                (self._cur_x, self._cur_y, self._alf) = self._stack.pop()
+            if command in commands:
+                commands[command]()
 
-    def process(self):
-        def _make_new_program(self):  # TODO: function name
-            cur_program = ""
-            for command in self._program:
-                if command in self._rules:
-                    cur_program += self._rules[command]
-                else:
-                    cur_program += command
-            self._program = cur_program
+    def _expand_step(self):
+        """Dig one step into program by rules."""
 
-        while self._depth > 0:
-            _make_new_program(self)
-            self._draw()
-            self._depth -= 1
-
-        self._process_events()
+        program = ""
+        for command in self._program:
+            if command in self._rules:
+                program += self._rules[command]
+            else:
+                program += command
+            self._program = program
